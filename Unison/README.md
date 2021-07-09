@@ -1,6 +1,7 @@
 # Tags
 
-* `modestcoders/unison:2.51.4` [(Dockerfile)](https://github.com/Hobiri/docker/blob/master/Unison/2.51.4/Dockerfile)
+* `hobiri/unison:2.51.2` [(Dockerfile)](https://github.com/Hobiri/docker/blob/master/Unison/2.51.2/Dockerfile)
+* `hobiri/unison:2.51.4` [(Dockerfile)](https://github.com/Hobiri/docker/blob/master/Unison/2.51.4/Dockerfile)
 
 # Description
 Bidirectional sync between container volumes and host without the performance compromises.
