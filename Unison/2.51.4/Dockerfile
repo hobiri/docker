@@ -1,4 +1,4 @@
-FROM alpine:3.14
+FROM alpine:3.13
 LABEL org.opencontainers.image.authors="f.bovo@hobiri.com"
 
 # Alpine doesn't ship with Bash.
