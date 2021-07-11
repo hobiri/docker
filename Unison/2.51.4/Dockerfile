@@ -4,16 +4,33 @@ LABEL org.opencontainers.image.authors="f.bovo@hobiri.com"
 # Alpine doesn't ship with Bash.
 RUN apk add --no-cache bash
 
-# Install Unison from source with inotify support + remove compilation tools
+# Install Unison from source with inotify support
 ARG UNISON_VERSION=2.51.4
-RUN apk add --no-cache --virtual .build-dependencies build-base curl && \
-    apk add --no-cache inotify-tools ocaml && \
+ARG OCAML_VERSION=4.12.0
+
+RUN apk update \
+    && apk add --no-cache --virtual .build-deps build-base coreutils \
+    && wget http://caml.inria.fr/pub/distrib/ocaml-${OCAML_VERSION:0:4}/ocaml-${OCAML_VERSION}.tar.gz \
+    && tar xvf ocaml-${OCAML_VERSION}.tar.gz -C /tmp \
+    && cd /tmp/ocaml-${OCAML_VERSION} \
+    && ./configure \
+    && make world \
+    && make opt \
+    && umask 022 \
+    && make install \
+    && make clean \
+    && apk del .build-deps  \
+    && rm -rf /tmp/ocaml-${OCAML_VERSION} \
+    && rm /ocaml-${OCAML_VERSION}.tar.gz
+
+RUN apk add --no-cache --virtual .build-deps build-base curl && \
+    apk add --no-cache inotify-tools && \
     curl -L https://github.com/bcpierce00/unison/archive/v$UNISON_VERSION.tar.gz | tar zxv -C /tmp && \
     cd /tmp/unison-${UNISON_VERSION} && \
     sed -i -e 's/GLIBC_SUPPORT_INOTIFY 0/GLIBC_SUPPORT_INOTIFY 1/' src/fsmonitor/linux/inotify_stubs.c && \
     make UISTYLE=text NATIVE=true STATIC=true && \
     cp src/unison src/unison-fsmonitor /usr/local/bin && \
-    apk del .build-dependencies ocaml && \
+    apk del .build-deps && \
     rm -rf /tmp/unison-${UNISON_VERSION}
 
 ENV UNISON_USER="docker" \
